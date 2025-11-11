@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../App.css";
+
 
 function EmployeeManagement() {
   const [employees, setEmployees] = useState([]);
@@ -6,6 +9,25 @@ function EmployeeManagement() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [editIndex, setEditIndex] = useState(null);
+
+  const navigate = useNavigate();
+
+  // ✅ Load employees from localStorage when page loads
+  useEffect(() => {
+    const storedEmployees = JSON.parse(localStorage.getItem("employees")) || [];
+    setEmployees(storedEmployees);
+  }, []);
+
+  // ✅ Save employees to localStorage whenever changed
+  useEffect(() => {
+    localStorage.setItem("employees", JSON.stringify(employees));
+  }, [employees]);
+
+  // ✅ Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -18,17 +40,14 @@ function EmployeeManagement() {
     const newEmployee = { id: Date.now(), name, email, role };
 
     if (editIndex !== null) {
-      // update existing employee
       const updated = [...employees];
       updated[editIndex] = newEmployee;
       setEmployees(updated);
       setEditIndex(null);
     } else {
-      // add new employee
       setEmployees([...employees, newEmployee]);
     }
 
-    // clear inputs
     setName("");
     setEmail("");
     setRole("");
@@ -49,7 +68,23 @@ function EmployeeManagement() {
 
   return (
     <div style={{ marginTop: "40px", textAlign: "center" }}>
-      <h2>Employee Management</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", padding: "0 40px" }}>
+        <h2>Employee Management</h2>
+        <button
+          onClick={handleLogout}
+          style={{
+            backgroundColor: "red",
+            color: "white",
+            border: "none",
+            padding: "8px 14px",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          Logout
+        </button>
+      </div>
+
       <form onSubmit={handleAdd} style={{ marginBottom: "20px" }}>
         <input
           type="text"

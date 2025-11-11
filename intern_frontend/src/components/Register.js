@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import "../App.css";
+
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +10,8 @@ const Register = () => {
     email: '',
     password: ''
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,12 +22,14 @@ const Register = () => {
     try {
       const res = await axios.post('http://127.0.0.1:8000/api/register/', formData);
 
-      // safely handle success response
       if (res && res.data && res.data.message) {
         alert(res.data.message);
       } else {
-        alert('Registration successful');
+        alert('Registration successful!');
       }
+
+      // ✅ Redirect to login page after successful registration
+      navigate('/login');
     } catch (err) {
       console.error('Registration error:', err);
       const errorMsg =
